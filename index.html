@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rich media Banner</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        var clickTag = "http://www.google.com";
+    </script>
+    
+
+</head>
+
+<body>
+    <!-- <img src="images/placeholder.png" id="placeholder"> -->
+    <div id="mainContainer" class="clicker">
+        <video class="videoPlayer" muted autoplay  id="mediaPlayer" tabindex="-1" disableremoteplayback="" webkit-playsinline="" playsinline="" src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+        <div class="controls mobileControls">
+            <a href="javascript:void(0)" id="mobilePlayButton"><img src="images/play.png"></a>
+        </div>
+        <div class="controls">
+            <a href="javascript:void(0)" id="playButton"><img src="images/play.png"></a>
+            <a href="javascript:void(0)" id="audioButton"><img src="images/unmute.png"></a>
+           
+            <span id="rangeSlider">
+                <span id="range">
+
+                </span>
+                <span id="thumb">
+
+                </span>
+                <span id="buffered">
+
+                </span>
+                <span id="played">
+
+                </span>
+            </span>
+            <span id="videoDuration">
+                <span id="currentTime">00.00</span> / 
+                <span id="runTime">00.00</span>
+            </span>
+        </div>
+        
+        <!-- EXIT -->
+        <div id="bannerExit" class="fullSize"></div>
+    </div>
+
+
+    <script src="js/logic.js"></script>
+</body>
+
+</html>
