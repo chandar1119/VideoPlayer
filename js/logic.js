@@ -134,15 +134,15 @@ function addListeners() {
         }
     }
     function move(event){
+        
+        event.preventDefault();
         if (isDown) {
-            
             if(event.touches != undefined){
 
                 myX = event.touches[0].clientX - id('range').getBoundingClientRect().left ;
                 console.log(myX)
             }
             else{
-                event.preventDefault();
                 myX = event.clientX - id('range').getBoundingClientRect().left;
             }
                 
