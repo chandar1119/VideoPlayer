@@ -81,7 +81,12 @@ function addListeners() {
             id('mediaPlayer').pause()
             play = true;
         }
-        var thumbValue = event.clientX - event.target.getBoundingClientRect().left;
+        if(event.touches != undefined){
+            var thumbValue = event.touches[0].clientX - id('range').getBoundingClientRect().left;
+        }
+        else{
+            var thumbValue = event.clientX - id('range').getBoundingClientRect().left;
+        }
         id('thumb').style.left = thumbValue / id('range').getBoundingClientRect().width * 100 + '%';
         id('played').style.width = thumbValue / id('range').getBoundingClientRect().width * 100 + '%';
         id('mediaPlayer').currentTime = id('mediaPlayer').duration / 100 * parseFloat(id('thumb').style.left);
@@ -114,7 +119,6 @@ function addListeners() {
 
     // function scope used in range click,drag-mousenmove,mouseup
     var myX = 0;
-
     document.addEventListener('mousemove', function(event) {
         move(event);        
     }, true);
@@ -132,17 +136,28 @@ function addListeners() {
         } else if (myX < 0) {
             myX = 0
         }
+
+        // if statement for hiding timer tooltip
+        // if(event.touches != undefined){
+        //     if(event.touches[0].clientY > (id('range').getBoundingClientRect().top + id('range').getBoundingClientRect().height)){
+        //         id('scrollTimer').classList.add('hidden');
+        //     }
+        // }
+        // else{
+        //     if(event.clientY > (id('range').getBoundingClientRect().top + id('range').getBoundingClientRect().height)){
+                id('scrollTimer').classList.add('hidden');
+        //     }
+        // }
+        
     }
     function move(event){
-        
-        event.preventDefault();
         if (isDown) {
+            
             if(event.touches != undefined){
-
                 myX = event.touches[0].clientX - id('range').getBoundingClientRect().left ;
-                console.log(myX)
             }
             else{
+                event.preventDefault();
                 myX = event.clientX - id('range').getBoundingClientRect().left;
             }
                 
@@ -159,8 +174,67 @@ function addListeners() {
 
             id('mediaPlayer').currentTime = id('mediaPlayer').duration / 100 * parseFloat(id('thumb').style.left);
             id('rangeSlider').classList.add('active');
+            moveTimer(event);
+            id('scrollTimer').classList.remove('hidden');
         }
     }
+
+
+    id('rangeSlider').addEventListener('mouseenter',function(event){
+        id('scrollTimer').classList.remove('hidden');
+    });
+    
+    id('rangeSlider').addEventListener('touchstart',function(event){
+        id('scrollTimer').classList.remove('hidden');
+    });
+    id('rangeSlider').addEventListener('mousemove',function(event){
+        setRangeSliderValue(event);
+    });
+    id('rangeSlider').addEventListener('touchmove',function(event){
+        setRangeSliderValue(event);
+    });
+    id('rangeSlider').addEventListener('mouseleave',function(event){
+        id('scrollTimer').classList.add('hidden');
+    });
+    id('rangeSlider').addEventListener('touchend',function(event){
+        id('scrollTimer').classList.add('hidden');
+    });
+}
+function setRangeSliderValue(event){
+    // create scroll scrubber thumbnail during runtime
+    if(id('thumbNailPlayer') == null){
+        var video = document.createElement('video');
+        video.src = id('mediaPlayer').getAttribute('src');
+        video.autoplay = false;
+        video.disableremoteplayback = '';
+        video.playsinline = '';
+        video.tabindex = '-1';
+        video.id="thumbNailPlayer";
+        video.controls ='';
+        id('hoverThumbNail').appendChild(video);
+    }
+    id('thumbNailPlayer').currentTime = moveTimer(event);
+    id('scrollTimer').classList.remove('hidden');
+}
+
+function moveTimer(event){
+    if(event.touches != undefined){
+        var mousePoint = event.touches[0].clientX - id('range').getBoundingClientRect().left;
+    }
+    else{
+        var mousePoint = event.clientX - id('range').getBoundingClientRect().left;
+    }
+        if(mousePoint < 0){
+            mousePoint = 0;
+        }
+        else if(mousePoint > id('range').getBoundingClientRect().width){
+            mousePoint = id('range').getBoundingClientRect().width;
+        }
+        id('scrollTimer').style.left = mousePoint + 'px';
+        var hoverValue = (mousePoint * 100/id('range').getBoundingClientRect().width);
+        var setValueInTooltip = setTimeInTooltip('duration',hoverValue);
+        id('hoverTimer').innerText = setValueInTooltip;
+        return setValueInTooltip * 100;
 }
 
 
@@ -168,6 +242,28 @@ function addListeners() {
 function setTime(obj) {
     let minutes = Math.floor(id('mediaPlayer')[obj] / 60);
     let seconds = Math.floor(id('mediaPlayer')[obj] - minutes * 60);
+    let minuteValue;
+    let secondValue;
+
+    if (minutes < 10) {
+        minuteValue = '0' + minutes;
+    } else {
+        minuteValue = minutes;
+    }
+
+    if (seconds < 10) {
+        secondValue = '0' + seconds;
+    } else {
+        secondValue = seconds;
+    }
+
+    return (minuteValue + '.' + secondValue);
+}
+
+function setTimeInTooltip(obj,percentage) {
+    let calcdDuration = id('mediaPlayer')[obj]/100 * percentage;
+    let minutes = Math.floor(calcdDuration / 60);
+    let seconds = Math.floor(calcdDuration - minutes * 60);
     let minuteValue;
     let secondValue;
 

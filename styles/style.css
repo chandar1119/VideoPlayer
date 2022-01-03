@@ -17,7 +17,7 @@ time, mark, audio, video {
     border: 0px;
     outline: 0px;
     font-size: 100%;
-    vertical-align: baseline;
+    vertical-align: middle;
     background: transparent;
 }
 
@@ -37,7 +37,6 @@ html, body { margin: 0px; overflow: hidden; background-color: white; width: 100%
 #mainContainer{
     position: relative;
     width: 600px;
-    line-height: 0;
     overflow: hidden;
     background-color: #000;
     border: 1px solid #000;
@@ -55,8 +54,6 @@ html, body { margin: 0px; overflow: hidden; background-color: white; width: 100%
     width: 100%;
     color: #fff;
     background-color: rgba(0,0,0,0.20);
-    opacity: 0;
-    pointer-events: none;
     transition: opacity 0.5s ease-in-out;
 }
 .mobileControls{
@@ -133,8 +130,39 @@ html, body { margin: 0px; overflow: hidden; background-color: white; width: 100%
 #rangeSlider.active #thumb{
     transform: translate(-50%,-50%) scale(1);
 }
+#scrollTimer{
+    position: absolute !important;
+    top: -136px;
+    left: 0;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 1);
+    display: inline-block;
+    color: #000;
+    padding: 5px;
+}
 
-@media (max-width:991px) {
+#scrollTimer::after{
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: rgba(255, 255, 255, 1);
+}
+#hoverThumbNail{
+    height: 80px;
+}
+#thumbNailPlayer{
+    height: 100%;
+}
+#hoverTimer{
+    display: block;
+    text-align: center;
+}
+@media (hover: none) {
     #playButton{
         display: none;
     }
@@ -151,7 +179,7 @@ html, body { margin: 0px; overflow: hidden; background-color: white; width: 100%
     }
     .mobileControls{
         top: 0;
-        bottom: 58px;
+        bottom: 59px;
         display: block; 
     }
     .controls{
@@ -184,5 +212,11 @@ html, body { margin: 0px; overflow: hidden; background-color: white; width: 100%
     #videoDuration{
         order: 3;
         margin-left: 10px;
+    }
+    #scrollTimer{
+        top: -55px;
+    }
+    #hoverThumbNail{
+        display: none;
     }
   }
