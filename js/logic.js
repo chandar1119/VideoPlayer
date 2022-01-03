@@ -190,7 +190,7 @@ function addListeners() {
         timerTouched = true;
     });
     id('rangeSlider').addEventListener('mousemove',function(event){
-        if(timerTouched){
+        if(timerTouched && event.target.id == 'thumb'){
             setRangeSliderValue(event);
         }
     });
