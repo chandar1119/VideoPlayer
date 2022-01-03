@@ -184,11 +184,15 @@ function addListeners() {
         id('scrollTimer').classList.remove('hidden');
     });
     
+    var timerTouched = false;
     id('rangeSlider').addEventListener('touchstart',function(event){
         id('scrollTimer').classList.remove('hidden');
+        timerTouched = true;
     });
     id('rangeSlider').addEventListener('mousemove',function(event){
-        setRangeSliderValue(event);
+        if(timerTouched){
+            setRangeSliderValue(event);
+        }
     });
     id('rangeSlider').addEventListener('touchmove',function(event){
         setRangeSliderValue(event);
@@ -198,6 +202,7 @@ function addListeners() {
     });
     id('rangeSlider').addEventListener('touchend',function(event){
         id('scrollTimer').classList.add('hidden');
+        timerTouched = false;
     });
 }
 function setRangeSliderValue(event){
