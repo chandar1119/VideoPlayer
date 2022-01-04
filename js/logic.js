@@ -72,7 +72,8 @@ function addListeners() {
         id('playButton').children[0].setAttribute('src','images/play.png');
     });
 
-    id('range').addEventListener('click', function(event) {
+    var rangeisDown = false;
+    id('range').addEventListener('mousedown', function(event) {
         var play = true;
         if (id('mediaPlayer').paused) {
             id('mediaPlayer').pause()
@@ -97,6 +98,7 @@ function addListeners() {
 
         myX = parseFloat(id('thumb').style.left) / 100 * id('range').getBoundingClientRect().width;
         id('rangeSlider').classList.add('active');
+        rangeisDown = true;
     }, false);
 
 
@@ -120,38 +122,44 @@ function addListeners() {
     // function scope used in range click,drag-mousenmove,mouseup
     var myX = 0;
     document.addEventListener('mousemove', function(event) {
-        move(event);        
+        if(rangeisDown){
+            move(event);
+        }
+        else if (isDown == true){
+            move(event);
+        }
+               
     }, true);
 
     document.addEventListener('touchmove', function(event) {
         move(event);        
     }, true);
 
+    document.addEventListener('mousedown',function(event){
+        if(event.target.id != 'thumb' && event.target.id != 'range'){
+            id('rangeSlider').classList.remove('active');
+        }
+    })
+    document.addEventListener('touchend',function(event){
+        if(event.target.id != 'thumb' && event.target.id != 'range'){
+            id('rangeSlider').classList.remove('active');
+        }
+    })
 
     function release(event){
         isDown = false;
         touchStart = false;
+        rangeisDown = false;
         if (myX > id('range').getBoundingClientRect().width) {
             myX = id('range').getBoundingClientRect().width;
         } else if (myX < 0) {
             myX = 0
         }
-
-        // if statement for hiding timer tooltip
-        // if(event.touches != undefined){
-        //     if(event.touches[0].clientY > (id('range').getBoundingClientRect().top + id('range').getBoundingClientRect().height)){
-        //         id('scrollTimer').classList.add('hidden');
-        //     }
-        // }
-        // else{
-        //     if(event.clientY > (id('range').getBoundingClientRect().top + id('range').getBoundingClientRect().height)){
-                id('scrollTimer').classList.add('hidden');
-        //     }
-        // }
+        id('scrollTimer').classList.add('hidden');
         
     }
+    
     function move(event){
-        if (isDown) {
             
             if(event.touches != undefined){
                 myX = event.touches[0].clientX - id('range').getBoundingClientRect().left ;
@@ -176,7 +184,7 @@ function addListeners() {
             id('rangeSlider').classList.add('active');
             moveTimer(event);
             id('scrollTimer').classList.remove('hidden');
-        }
+        
     }
 
 
@@ -186,16 +194,20 @@ function addListeners() {
     
     var timerTouched = false;
     id('rangeSlider').addEventListener('touchstart',function(event){
+        if(event.target.id == 'thumb'){
         id('scrollTimer').classList.remove('hidden');
         timerTouched = true;
-    });
-    id('rangeSlider').addEventListener('mousemove',function(event){
-        if(timerTouched && event.target.id == 'thumb'){
-            setRangeSliderValue(event);
         }
     });
-    id('rangeSlider').addEventListener('touchmove',function(event){
+    id('rangeSlider').addEventListener('mousemove',function(event){
         setRangeSliderValue(event);
+        console.log(1)
+    });
+    id('rangeSlider').addEventListener('touchmove',function(event){
+        if(timerTouched && event.target.id == 'thumb'){
+            setRangeSliderValue(event);
+            console.log(2)
+        }
     });
     id('rangeSlider').addEventListener('mouseleave',function(event){
         id('scrollTimer').classList.add('hidden');
