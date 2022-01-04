@@ -101,7 +101,9 @@ function addListeners() {
         rangeisDown = true;
     }, false);
 
-
+    id('range').addEventListener('mouseup', function(event) {
+        rangeisDown = false;
+    });
     var isDown = false;
     
     id('thumb').addEventListener('mousedown', function(event) {
