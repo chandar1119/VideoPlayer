@@ -12,27 +12,64 @@ function init() {
 
 }
 
-// BACKGROUND EXIT
 function addListeners() {
+
+    // function scope variables mostly used as Flag var
+    var rangeisDown = false; //rangeisDown is used to show/move thumbnail image while scrolling though timeline
+    var isDown = false; //isDown is used to check timer thumb pressed or not while moving it.
+    // function scope used in range click,drag-mousenmove,mouseup
+    var myX = 0;
+    var timer = null;
     id('playButton').addEventListener('click', function(event) {
-        if (id('mediaPlayer').paused) {
-            id('mediaPlayer').play();
-            event.target.setAttribute('src','images/pause.png');
-        } else {
-            id('mediaPlayer').pause()
-            event.target.setAttribute('src','images/play.png');
-        }
+        playVideo();
+        showControls(id('mainContainer'));
+    }, false);
+
+    id('desktopPlay').addEventListener('click', function(event) {
+        playVideo();
+        showControls(id('mainContainer'));
     }, false);
 
     id('mobilePlayButton').addEventListener('click', function(event) {
+        playVideo();
+        showControls(id('mainContainer'));
+    }, false);
+    
+    id('mainContainer').addEventListener('mouseenter',function(){
+        this.classList.add('showControls');
+    });
+    id('mainContainer').addEventListener('touchstart',function(){
+        this.classList.add('showControls');
+    })
+    
+    id('mainContainer').addEventListener('mouseleave',function(){
+        showControls(this);
+    });
+
+    id('mainContainer').addEventListener('touchend',function(){
+        showControls(this);
+    });
+
+    function showControls(that){
+        clearTimeout(timer);
+        if (id('mediaPlayer').paused) {
+            that.classList.add('showControls');
+        }
+        else{
+            timer = setTimeout(function(){
+                that.classList.remove('showControls');
+            },2000)
+        }
+    }
+    function playVideo(){
         if (id('mediaPlayer').paused) {
             id('mediaPlayer').play();
-            event.target.setAttribute('src','images/pause.png');
+            id('playButton').childNodes[0].setAttribute('src','images/pause.png');
         } else {
             id('mediaPlayer').pause()
-            event.target.setAttribute('src','images/play.png');
+            id('playButton').childNodes[0].setAttribute('src','images/play.png');
         }
-    }, false);
+    }
 
     id('audioButton').addEventListener('click', function(event) {
         if(id('mediaPlayer').muted){
@@ -70,10 +107,16 @@ function addListeners() {
 
     id('mediaPlayer').addEventListener('ended', function(){
         id('playButton').children[0].setAttribute('src','images/play.png');
+        showControls(id('mainContainer'))
     });
 
-    var rangeisDown = false;
     id('range').addEventListener('mousedown', function(event) {
+        rangeClick(event);
+    }, false);
+    id('range').addEventListener('touchstart', function(event) {
+        rangeClick(event);
+    }, false);
+    function rangeClick(event){
         var play = true;
         if (id('mediaPlayer').paused) {
             id('mediaPlayer').pause()
@@ -94,17 +137,16 @@ function addListeners() {
         if (play) {
             id('mediaPlayer').play()
         }
-
-
         myX = parseFloat(id('thumb').style.left) / 100 * id('range').getBoundingClientRect().width;
         id('rangeSlider').classList.add('active');
         rangeisDown = true;
-    }, false);
-
+    }
     id('range').addEventListener('mouseup', function(event) {
         rangeisDown = false;
     });
-    var isDown = false;
+    id('range').addEventListener('touchend', function(event) {
+        rangeisDown = false;
+    });
     
     id('thumb').addEventListener('mousedown', function(event) {
         isDown = true;        
@@ -117,12 +159,11 @@ function addListeners() {
     document.addEventListener('mouseup', function(event) {
         release(event);
     }, true);
+
     document.addEventListener('touchend', function(event) {
         release(event);
     }, true);
 
-    // function scope used in range click,drag-mousenmove,mouseup
-    var myX = 0;
     document.addEventListener('mousemove', function(event) {
         if(rangeisDown){
             move(event);
@@ -134,7 +175,12 @@ function addListeners() {
     }, true);
 
     document.addEventListener('touchmove', function(event) {
-        move(event);        
+        if(rangeisDown){
+            move(event);
+        }
+        else if (isDown == true){
+            move(event);
+        } 
     }, true);
 
     document.addEventListener('mousedown',function(event){
@@ -157,7 +203,7 @@ function addListeners() {
         } else if (myX < 0) {
             myX = 0
         }
-        id('scrollTimer').classList.add('hidden');
+        id('scrollTimer').classList.add('displayNone');
         
     }
     
@@ -185,40 +231,42 @@ function addListeners() {
             id('mediaPlayer').currentTime = id('mediaPlayer').duration / 100 * parseFloat(id('thumb').style.left);
             id('rangeSlider').classList.add('active');
             moveTimer(event);
-            id('scrollTimer').classList.remove('hidden');
+            id('scrollTimer').classList.remove('displayNone');
         
     }
 
 
     id('rangeSlider').addEventListener('mouseenter',function(event){
-        id('scrollTimer').classList.remove('hidden');
+        id('scrollTimer').classList.remove('displayNone');
     });
     
     var timerTouched = false;
     id('rangeSlider').addEventListener('touchstart',function(event){
         if(event.target.id == 'thumb'){
-        id('scrollTimer').classList.remove('hidden');
-        timerTouched = true;
+        id('scrollTimer').classList.remove('displayNone');
+        
         }
+        timerTouched = true;
     });
+
     id('rangeSlider').addEventListener('mousemove',function(event){
         setRangeSliderValue(event);
-        console.log(1)
     });
+
     id('rangeSlider').addEventListener('touchmove',function(event){
-        if(timerTouched && event.target.id == 'thumb'){
-            setRangeSliderValue(event);
-            console.log(2)
-        }
+        setRangeSliderValue(event);
     });
+
     id('rangeSlider').addEventListener('mouseleave',function(event){
-        id('scrollTimer').classList.add('hidden');
+        id('scrollTimer').classList.add('displayNone');
     });
+
     id('rangeSlider').addEventListener('touchend',function(event){
-        id('scrollTimer').classList.add('hidden');
+        id('scrollTimer').classList.add('displayNone');
         timerTouched = false;
     });
 }
+
 function setRangeSliderValue(event){
     // create scroll scrubber thumbnail during runtime
     if(id('thumbNailPlayer') == null){
@@ -233,7 +281,7 @@ function setRangeSliderValue(event){
         id('hoverThumbNail').appendChild(video);
     }
     id('thumbNailPlayer').currentTime = moveTimer(event);
-    id('scrollTimer').classList.remove('hidden');
+    id('scrollTimer').classList.remove('displayNone');
 }
 
 function moveTimer(event){
@@ -243,17 +291,33 @@ function moveTimer(event){
     else{
         var mousePoint = event.clientX - id('range').getBoundingClientRect().left;
     }
-        if(mousePoint < 0){
-            mousePoint = 0;
-        }
-        else if(mousePoint > id('range').getBoundingClientRect().width){
-            mousePoint = id('range').getBoundingClientRect().width;
-        }
-        id('scrollTimer').style.left = mousePoint + 'px';
-        var hoverValue = (mousePoint * 100/id('range').getBoundingClientRect().width);
-        var setValueInTooltip = setTimeInTooltip('duration',hoverValue);
-        id('hoverTimer').innerText = setValueInTooltip;
-        return setValueInTooltip * 100;
+    // this if statement is for not allowing tooltip to go further left/right than timer width
+    if(mousePoint < id('scrollTimer').getBoundingClientRect().width/2){
+        mousePoint = id('scrollTimer').getBoundingClientRect().width/2;
+    }
+    else if(mousePoint > (id('range').getBoundingClientRect().width - (id('scrollTimer').getBoundingClientRect().width)/2)){
+        mousePoint = id('range').getBoundingClientRect().width - (id('scrollTimer').getBoundingClientRect().width)/2;
+    }
+    id('scrollTimer').style.left = mousePoint + 'px';
+
+    //reinitializing mousepoint to get correct thumbnail image even if the tootlip stopped moving beyond certain limit- fall back
+    if(event.touches != undefined){
+        var mousePoint = event.touches[0].clientX - id('range').getBoundingClientRect().left;
+    }
+    else{
+        var mousePoint = event.clientX - id('range').getBoundingClientRect().left;
+    }
+
+    if(mousePoint < 0){
+        mousePoint = 0;
+    }
+    else if(mousePoint > (id('range').getBoundingClientRect().width)){
+        mousePoint = id('range').getBoundingClientRect().width;
+    }
+    var hoverValue = (mousePoint * 100/id('range').getBoundingClientRect().width);
+    var setValueInTooltip = setTimeInTooltip('duration',hoverValue);
+    id('hoverTimer').innerText = setValueInTooltip;
+    return setValueInTooltip * 100;
 }
 
 
