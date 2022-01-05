@@ -2,17 +2,22 @@ window.onload = function() {
     init();
 }
 
+
 id('mediaPlayer').onloadeddata = function() {
     id('runTime').innerText = setTime('duration');
     buffer();
 };
 
+
 function init() {
     addListeners();
 
+
 }
 
+
 function addListeners() {
+
 
     // function scope variables mostly used as Flag var
     var rangeisDown = false; //rangeisDown is used to show/move thumbnail image while scrolling though timeline
@@ -25,10 +30,12 @@ function addListeners() {
         showControls(id('mainContainer'));
     }, false);
 
+
     id('desktopPlay').addEventListener('click', function(event) {
         playVideo();
         showControls(id('mainContainer'));
     }, false);
+
 
     id('mobilePlayButton').addEventListener('click', function(event) {
         playVideo();
@@ -36,9 +43,11 @@ function addListeners() {
     }, false);
     
     id('mainContainer').addEventListener('mouseenter',function(){
+        clearTimeout(timer);
         this.classList.add('showControls');
     });
     id('mainContainer').addEventListener('touchstart',function(){
+        clearTimeout(timer);
         this.classList.add('showControls');
     })
     
@@ -46,9 +55,11 @@ function addListeners() {
         showControls(this);
     });
 
+
     id('mainContainer').addEventListener('touchend',function(){
         showControls(this);
     });
+
 
     function showControls(that){
         clearTimeout(timer);
@@ -71,6 +82,7 @@ function addListeners() {
         }
     }
 
+
     id('audioButton').addEventListener('click', function(event) {
         if(id('mediaPlayer').muted){
             id('mediaPlayer').muted =! id('mediaPlayer').muted;
@@ -81,6 +93,7 @@ function addListeners() {
             id('audioButton').children[0].setAttribute('src','images/mute.png');
         }
     }, false);
+
 
     id('mediaPlayer').addEventListener('timeupdate', function() {
         if (!id('mediaPlayer').paused) {
@@ -96,6 +109,7 @@ function addListeners() {
         audio('audioButton');
     });
 
+
     function audio(btn){
         if(id('mediaPlayer').muted){
             id(btn).children[0].setAttribute('src','images/mute.png');
@@ -105,10 +119,12 @@ function addListeners() {
         }
     }
 
+
     id('mediaPlayer').addEventListener('ended', function(){
         id('playButton').children[0].setAttribute('src','images/play.png');
         showControls(id('mainContainer'))
     });
+
 
     id('range').addEventListener('mousedown', function(event) {
         rangeClick(event);
@@ -152,17 +168,21 @@ function addListeners() {
         isDown = true;        
     }, true);
 
+
     id('thumb').addEventListener('touchstart', function(event) {
         isDown = true;        
     }, true);
+
 
     document.addEventListener('mouseup', function(event) {
         release(event);
     }, true);
 
+
     document.addEventListener('touchend', function(event) {
         release(event);
     }, true);
+
 
     document.addEventListener('mousemove', function(event) {
         if(rangeisDown){
@@ -174,6 +194,7 @@ function addListeners() {
                
     }, true);
 
+
     document.addEventListener('touchmove', function(event) {
         if(rangeisDown){
             move(event);
@@ -182,6 +203,7 @@ function addListeners() {
             move(event);
         } 
     }, true);
+
 
     document.addEventListener('mousedown',function(event){
         if(event.target.id != 'thumb' && event.target.id != 'range'){
@@ -193,6 +215,7 @@ function addListeners() {
             id('rangeSlider').classList.remove('active');
         }
     })
+
 
     function release(event){
         isDown = false;
@@ -228,12 +251,14 @@ function addListeners() {
                 id('played').style.width = myX / id('range').getBoundingClientRect().width * 100 + '%';
             }
 
+
             id('mediaPlayer').currentTime = id('mediaPlayer').duration / 100 * parseFloat(id('thumb').style.left);
             id('rangeSlider').classList.add('active');
             moveTimer(event);
             id('scrollTimer').classList.remove('displayNone');
         
     }
+
 
 
     id('rangeSlider').addEventListener('mouseenter',function(event){
@@ -249,17 +274,21 @@ function addListeners() {
         timerTouched = true;
     });
 
+
     id('rangeSlider').addEventListener('mousemove',function(event){
         setRangeSliderValue(event);
     });
+
 
     id('rangeSlider').addEventListener('touchmove',function(event){
         setRangeSliderValue(event);
     });
 
+
     id('rangeSlider').addEventListener('mouseleave',function(event){
         id('scrollTimer').classList.add('displayNone');
     });
+
 
     id('rangeSlider').addEventListener('touchend',function(event){
         id('scrollTimer').classList.add('displayNone');
@@ -267,22 +296,25 @@ function addListeners() {
     });
 }
 
+
 function setRangeSliderValue(event){
     // create scroll scrubber thumbnail during runtime
     if(id('thumbNailPlayer') == null){
-        var video = document.createElement('video');
-        video.src = id('mediaPlayer').getAttribute('src');
-        video.autoplay = false;
-        video.disableremoteplayback = '';
-        video.playsinline = '';
-        video.tabindex = '-1';
-        video.id="thumbNailPlayer";
-        video.controls ='';
+        var video = document.createElement('video');        
+        video.setAttribute("muted" , '');
+        video.setAttribute("id" , "thumbNailPlayer");
+        video.setAttribute("tabindex" , '-1');
+        video.setAttribute("disableremoteplayback" , '');
+        video.setAttribute("webkit-playsinline" , '');
+        video.setAttribute("playsinline",  '');
+        video.setAttribute("src" , id('mediaPlayer').getAttribute('src'));
+        // video.setAttribute("controls" , '');
         id('hoverThumbNail').appendChild(video);
     }
     id('thumbNailPlayer').currentTime = moveTimer(event);
     id('scrollTimer').classList.remove('displayNone');
 }
+
 
 function moveTimer(event){
     if(event.touches != undefined){
@@ -300,6 +332,7 @@ function moveTimer(event){
     }
     id('scrollTimer').style.left = mousePoint + 'px';
 
+
     //reinitializing mousepoint to get correct thumbnail image even if the tootlip stopped moving beyond certain limit- fall back
     if(event.touches != undefined){
         var mousePoint = event.touches[0].clientX - id('range').getBoundingClientRect().left;
@@ -307,6 +340,7 @@ function moveTimer(event){
     else{
         var mousePoint = event.clientX - id('range').getBoundingClientRect().left;
     }
+
 
     if(mousePoint < 0){
         mousePoint = 0;
@@ -321,6 +355,7 @@ function moveTimer(event){
 }
 
 
+
 // to set texts in video control like duration,current time etc.,
 function setTime(obj) {
     let minutes = Math.floor(id('mediaPlayer')[obj] / 60);
@@ -328,11 +363,13 @@ function setTime(obj) {
     let minuteValue;
     let secondValue;
 
+
     if (minutes < 10) {
         minuteValue = '0' + minutes;
     } else {
         minuteValue = minutes;
     }
+
 
     if (seconds < 10) {
         secondValue = '0' + seconds;
@@ -340,8 +377,10 @@ function setTime(obj) {
         secondValue = seconds;
     }
 
+
     return (minuteValue + '.' + secondValue);
 }
+
 
 function setTimeInTooltip(obj,percentage) {
     let calcdDuration = id('mediaPlayer')[obj]/100 * percentage;
@@ -350,11 +389,13 @@ function setTimeInTooltip(obj,percentage) {
     let minuteValue;
     let secondValue;
 
+
     if (minutes < 10) {
         minuteValue = '0' + minutes;
     } else {
         minuteValue = minutes;
     }
+
 
     if (seconds < 10) {
         secondValue = '0' + seconds;
@@ -362,8 +403,10 @@ function setTimeInTooltip(obj,percentage) {
         secondValue = seconds;
     }
 
+
     return (minuteValue + '.' + secondValue);
 }
+
 
 
 function buffer() {
@@ -372,11 +415,13 @@ function buffer() {
     id('buffered').style.width = bufferEnd / id('mediaPlayer').duration * 100 + '%';
 }
 
+
 function played() {
     var currentTime = parseFloat(id('mediaPlayer').currentTime);
     id('played').style.width = currentTime / id('mediaPlayer').duration * 100 + '%';
     id('thumb').style.left = currentTime / id('mediaPlayer').duration * 100 + '%'
 }
+
 
 function id(input) {
     return document.getElementById(input);
